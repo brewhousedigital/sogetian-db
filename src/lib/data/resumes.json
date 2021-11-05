@@ -1,0 +1,36 @@
+[
+  {
+    "id": 1,
+    "name": "Zach V",
+    "image": "",
+    "level": "Senior Consultant",
+    "summary": "HTML elements are the building blocks of HTML pages. With HTML constructs, images and other objects such as interactive forms may be embedded into the rendered page. HTML provides a means to create structured documents by denoting structural semantics for text such as headings, paragraphs, lists, links, quotes and other items.",
+    "education": "University of Dallas",
+    "updated": "May 5, 2019",
+    "affiliations": "Published on Dev.To x3, Life Coach",
+    "skillsCertifications": "CompTIA Fundamentals, Certified Scrum Master",
+    "skillsTrained": "Front-end Development",
+    "skillsOS": "Windows, macOS, Linux",
+    "skillsApplications": "Webstorm, Visual Studio Code, Photoshop, Svelte, React, Backendless, Netlify, AWS",
+    "status": "",
+    "practice": "",
+    "jobs": []
+  },
+  {
+    "id": 2,
+    "name": "Yuri C",
+    "image": "",
+    "level": "Senior Consultant",
+    "summary": "HTML can embed programs written in a scripting language such as JavaScript, which affects the behavior and content of web pages. Inclusion of CSS defines the look and layout of content. The World Wide Web Consortium (W3C), former maintainer of the HTML and current maintainer of the CSS standards, has encouraged the use of CSS over explicit presentational HTML since 1997.",
+    "education": "University of Dallas",
+    "updated": "March 20, 1998",
+    "affiliations": "",
+    "skillsCertifications": "",
+    "skillsTrained": "",
+    "skillsOS": "",
+    "skillsApplications": "",
+    "status": "",
+    "practice": "",
+    "jobs": []
+  }
+]
