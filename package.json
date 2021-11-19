@@ -2,6 +2,7 @@
   "name": "sogetian-db",
   "version": "0.0.1",
   "scripts": {
+    "start": "svelte-kit dev",
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
     "preview": "svelte-kit preview"
@@ -12,6 +13,7 @@
   },
   "type": "module",
   "dependencies": {
+    "slugify": "^1.6.2",
     "svelte-multiselect": "^1.2.3"
   }
 }

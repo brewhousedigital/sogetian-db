@@ -1,16 +1,18 @@
 [
   {
+    "id": 1,
     "name": "EmployBridge",
     "logo": "client-employbridge.jpg",
     "description": "The nation's largest industrial staffing company.",
     "created": "May 2020",
-    "EE": "Samantha Docouto"
+    "BDE": "Samantha Docouto"
   },
   {
+    "id": 2,
     "name": "BNSF",
     "logo": "client-bnsf.jpg",
     "description": "Operating one of the largest freight railroad networks in North America.",
     "created": "May 2020",
-    "EE": "Jim Germany"
+    "BDE": "Jim Germany"
   }
 ]

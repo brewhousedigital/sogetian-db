@@ -37,7 +37,7 @@
             {#each $resumes as resume}
             <a href="/resumes/{resume.id}" class="list-group-item list-group-item-action">
                 <div class="d-flex w-100 align-items-center">
-                    <img src="/images/placeholder-avatar.png"
+                    <img src="{resume.image === '' ? '/images/placeholder-avatar.png' : resume.image}"
                          alt="Profile photo for {resume.name}"
                          width="50"
                          height="50"

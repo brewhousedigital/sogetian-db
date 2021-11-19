@@ -2,12 +2,13 @@
 import Header from "$lib/components/Header.svelte";
 import Sidebar from "$lib/components/Sidebar.svelte";
 import {afterUpdate, onMount} from "svelte";
-import {updateResumes} from "$lib/stores";
+import {updateClientsStore, updateResumesStore} from "$lib/stores";
 
 let url = "";
 
 onMount(async() => {
-    await updateResumes();
+    await updateResumesStore();
+    await updateClientsStore();
 })
 
 afterUpdate(() => {

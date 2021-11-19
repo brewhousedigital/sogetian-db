@@ -7,13 +7,16 @@
 </script>
 
 <script>
+    import Card from "$lib/components/Card.svelte";
+
     export let pageSlug;
 
     import ResumeEditBtn from "$lib/components/Resume/ResumeEditBtn.svelte";
     import {afterUpdate} from "svelte";
     import MultiSelect from 'svelte-multiselect'
     import GeneralTemplate from "$lib/layouts/GeneralTemplate.svelte";
-    import {resumes} from "$lib/stores";
+    import {resumes, clients} from "$lib/stores";
+
 
     let resume;
     let affiliationsAwardsPublications = [];
@@ -70,8 +73,19 @@
         "Sketch"
     ]
 
+
+
+
     // Anytime $resumes object updates, update the specific resume here
     $: resume = $resumes.find(item => item.id === parseInt(pageSlug))
+
+    // Anytime $resumes object updates, grab all the new clients as well
+    let assignedJobs = [];
+    $: {if(resume) assignedJobs = resume['jobsAssigned'].map(jobId => $clients.find(client => client.id === jobId))}
+
+
+
+
 
     let editMode = false;
     let editModeText = "Edit Mode";
@@ -103,6 +117,7 @@
             modalContent = "select";
             modalTitle = "Edit Level";
             modalBindValue = [resume.level];
+            modalBindValue.forEach(item => item.trim())
             modalSelectOptions = sogetiLevels;
             handleModalSave = (e) => {
                 e.preventDefault();
@@ -129,7 +144,7 @@
             modalContent = "textarea";
             modalTitle = "Edit Education";
             modalPlaceholder = "University of...";
-            modalBindValue = resume.summary;
+            modalBindValue = resume.education;
             handleModalSave = (e) => {
                 e.preventDefault();
                 resume.education = modalBindValue;
@@ -140,15 +155,35 @@
         if(type === "skills") {
             modalContent = "skills";
             modalTitle = "Edit Skills";
+
+            // Turn the list into an array
             modalBindValueSkillsCerts = resume.skillsCertifications.split(",");
             modalBindValueSkillsTrained = resume.skillsTrained.split(",");
             modalBindValueSkillsApps = resume.skillsApplications.split(",");
+
+            // Trim all whitespace
+            modalBindValueSkillsCerts = modalBindValueSkillsCerts.map(item => item.trim())
+            modalBindValueSkillsTrained = modalBindValueSkillsTrained.map(item => item.trim())
+            modalBindValueSkillsApps = modalBindValueSkillsApps.map(item => item.trim())
 
             handleModalSave = (e) => {
                 e.preventDefault();
                 resume.skillsCertifications = modalBindValueSkillsCerts.join(", ");
                 resume.skillsTrained = modalBindValueSkillsTrained.join(", ");
                 resume.skillsApplications = modalBindValueSkillsApps.join(", ");
+                editModal.hide();
+            }
+        }
+
+        if(type === "affiliations") {
+            modalContent = "textarea";
+            modalTitle = "Edit Professional Affiliations, Awards, Publications";
+            modalPlaceholder = "Contributed to multiple projects related to...";
+            modalBindValue = resume.affiliationsAwardsPublications;
+            handleModalSave = (e) => {
+                e.preventDefault();
+                resume.affiliationsAwardsPublications = modalBindValue;
+                console.log(">>resume.affiliationsAwardsPublications", resume.affiliationsAwardsPublications)
                 editModal.hide();
             }
         }
@@ -278,7 +313,7 @@
         <div class="row">
             <div class="col sidebar">
                 <section class="mb-4">
-                    <img src="/images/{resume.image === '' ? 'placeholder-avatar.png' : resume.image}"
+                    <img src="{resume.image === '' ? '/images/placeholder-avatar.png' : resume.image}"
                          alt="Profile Photo for {resume.name}"
                          class="img-fluid rounded">
                 </section>
@@ -342,12 +377,27 @@
                 </section>
 
                 <section class="mb-5">
-                    <h3>Professional Affiliations, Awards, Publications</h3>
+                    <h3>Professional Affiliations, Awards, Publications <ResumeEditBtn isVisible={editMode} {handleEdit} type="affiliations"/></h3>
                     <ul>
                         {#each affiliationsAwardsPublications as item}
                             <li>{item.trim()}</li>
                         {/each}
                     </ul>
+                </section>
+
+                <section class="mb-5">
+                    <h3>Currently Assigned</h3>
+                    <div class="row">
+                    {#each assignedJobs as job}
+                        {#if job}
+                        <div class="col-xl-3 col-lg-4 col-6">
+                            <Card name={job.name} logo={job.logo} />
+                        </div>
+                        {/if}
+                    {:else}
+                        <div class="col-12">Not currently assigned to a client.</div>
+                    {/each}
+                    </div>
                 </section>
 
                 <section class="mb-5">
@@ -379,7 +429,6 @@
                     {#if modalContent === "select"}
                         <MultiSelect bind:modalBindValue
                                      maxSelect={1}
-                                     on:change={event => {modalBindValue = event.detail.token}}
                                      selected={modalBindValue}
                                      options={modalSelectOptions} />
                     {/if}
@@ -388,7 +437,12 @@
                         <div class="mb-3">
                             <p class="fw-bold">Certifications</p>
                             <MultiSelect bind:modalBindValueSkillsCerts
-                                         on:change={event => {modalBindValueSkillsCerts = [...modalBindValueSkillsCerts, event.detail.token]}}
+                                         on:add={(e) => {
+                                             modalBindValueSkillsCerts = [...modalBindValueSkillsCerts, e.detail.token]
+                                         }}
+                                         on:remove={(e) => {
+                                             modalBindValueSkillsCerts = modalBindValueSkillsCerts.filter(item => item !== e.detail.token)
+                                         }}
                                          selected={modalBindValueSkillsCerts}
                                          options={sogetiCertifications}/>
                         </div>
@@ -396,7 +450,12 @@
                         <div class="mb-3">
                             <p class="fw-bold">Trained / Proficient</p>
                             <MultiSelect bind:modalBindValueSkillsTrained
-                                         on:change={event => {modalBindValueSkillsTrained = [...modalBindValueSkillsTrained, event.detail.token]}}
+                                         on:add={(e) => {
+                                             modalBindValueSkillsTrained = [...modalBindValueSkillsTrained, e.detail.token]
+                                         }}
+                                         on:remove={(e) => {
+                                             modalBindValueSkillsTrained = modalBindValueSkillsTrained.filter(item => item !== e.detail.token)
+                                         }}
                                          selected={modalBindValueSkillsTrained}
                                          options={sogetiTrained}/>
                         </div>
@@ -404,7 +463,12 @@
                         <div class="mb-3">
                             <p class="fw-bold">Applications and Utilities</p>
                             <MultiSelect bind:modalBindValueSkillsApps
-                                         on:change={event => {modalBindValueSkillsApps = [...modalBindValueSkillsApps, event.detail.token]}}
+                                         on:add={(e) => {
+                                             modalBindValueSkillsApps = [...modalBindValueSkillsApps, e.detail.token]
+                                         }}
+                                         on:remove={(e) => {
+                                             modalBindValueSkillsApps = modalBindValueSkillsApps.filter(item => item !== e.detail.token)
+                                         }}
                                          selected={modalBindValueSkillsApps}
                                          options={sogetiApps}/>
                         </div>
