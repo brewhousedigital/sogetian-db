@@ -7,21 +7,28 @@
 </script>
 
 <script>
-    import Card from "$lib/components/Card.svelte";
-
     export let pageSlug;
 
+    // Helper functions and global variables
+    import {afterUpdate, onMount} from "svelte";
+    import {getResume, getAllClients, getResumeOptionValues} from "$lib/functions/request";
+
+
+    // Components
     import ResumeEditBtn from "$lib/components/Resume/ResumeEditBtn.svelte";
-    import {afterUpdate} from "svelte";
     import MultiSelect from 'svelte-multiselect'
     import GeneralTemplate from "$lib/layouts/GeneralTemplate.svelte";
-    import {resumes, clients} from "$lib/stores";
+    import Card from "$lib/components/Card.svelte";
 
 
-    let resume;
+    let resume = false;
     let affiliationsAwardsPublications = [];
     let skillsCertifications = [];
+    let assignedJobs = [];
+    let [sogetiLevels, sogetiCertifications, sogetiTrained, sogetiApps] = [];
 
+
+    // Edit Mode modal values
     let modalTitle = "";
     let modalContent = "";
     let modalBindValue;
@@ -32,63 +39,23 @@
     let modalPlaceholder = "";
     let handleModalSave = () => {}
 
-    const sogetiLevels = [
-        "Consultant A1",
-        "Consultant A2",
-        "Senior Consultant",
-        "Manager",
-        "Senior Manager",
-        "Director",
-        "Vice President"
-    ];
 
-    const sogetiCertifications = [
-        "CompTIA Fundamentals",
-        "Certified Scrum Master",
-        "Azure Cloud",
-        "AWS Cognito",
-    ]
-
-    const sogetiTrained = [
-        "Front-end Development",
-        "Back-end Development",
-        "Graphic Design",
-        "Web Design",
-        "UX Research",
-        "QA Testing",
-        "Scrum / Agile",
-        "Machine Learning"
-    ]
-
-    const sogetiApps = [
-        "Photoshop",
-        "Visual Studio Code",
-        "WebStorm",
-        "Svelte",
-        "React",
-        "Angular",
-        "Gatsby",
-        "FaunaDB",
-        "Figma",
-        "Sketch"
-    ]
-
-
-
-
-    // Anytime $resumes object updates, update the specific resume here
-    $: resume = $resumes.find(item => item.id === parseInt(pageSlug))
-
-    // Anytime $resumes object updates, grab all the new clients as well
-    let assignedJobs = [];
-    $: {if(resume) assignedJobs = resume['jobsAssigned'].map(jobId => $clients.find(client => client.id === jobId))}
-
-
-
-
-
+    // Edit mode
     let editMode = false;
     let editModeText = "Edit Mode";
+
+
+    onMount(async() => {
+        // Update the resume state from the API
+        resume = await getResume(pageSlug);
+
+        // Retrieve all clients to map to the user
+        let clients = await getAllClients();
+        assignedJobs = resume['jobsAssigned'].map(jobId => clients.find(client => client.id === jobId));
+
+        // Retrieve all the admin set values
+        [sogetiLevels, sogetiCertifications, sogetiTrained, sogetiApps] = await getResumeOptionValues();
+    });
 
     afterUpdate(() => {
         // Update values on the resume

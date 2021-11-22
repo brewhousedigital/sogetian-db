@@ -7,6 +7,7 @@ import {updateClientsStore, updateResumesStore} from "$lib/stores";
 let url = "";
 
 onMount(async() => {
+    console.log(">>> Inside the layout file")
     await updateResumesStore();
     await updateClientsStore();
 })

@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 
-// Resumes
+// Retrieve all resumes from azure table
 export const resumes = writable([]);
 
 export const updateResumesStore = async() => {
@@ -11,7 +11,7 @@ export const updateResumesStore = async() => {
 }
 
 
-// Clients
+// Retrieve all clients from azure table
 export const clients = writable([]);
 
 export const updateClientsStore = async() => {
@@ -19,3 +19,4 @@ export const updateClientsStore = async() => {
     data = await data.json();
     clients.set([...data]);
 }
+
